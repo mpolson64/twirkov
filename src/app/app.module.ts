@@ -4,21 +4,24 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
-import { TweetCardComponent } from './components/tweet-card/tweet-card.component';
 import { CardHolderComponent } from './components/card-holder/card-holder.component';
+import {UserService} from './services/user.service';
+import {HttpClientModule} from '@angular/common/http';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
-    TweetCardComponent,
     CardHolderComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [
+    UserService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

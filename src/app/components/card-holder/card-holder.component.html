@@ -1,18 +1,12 @@
 <body style="background-color:#d0e2f0">
   <div class="card-columns">
-    <app-tweet-card></app-tweet-card>
-    <app-tweet-card></app-tweet-card>
-    <app-tweet-card></app-tweet-card>
-    <app-tweet-card></app-tweet-card>
-    <app-tweet-card></app-tweet-card>
-    <app-tweet-card></app-tweet-card>
-    <app-tweet-card></app-tweet-card>
-    <app-tweet-card></app-tweet-card>
-    <app-tweet-card></app-tweet-card>
-    <app-tweet-card></app-tweet-card>
-    <app-tweet-card></app-tweet-card>
-    <app-tweet-card></app-tweet-card>
-    <app-tweet-card></app-tweet-card>
+    <div class="card p-3" *ngFor="let tweet of tweets">
+      <div class="card-body">
+        <h5 class="card-title">@{{tweet.screen_name}}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{tweet.time}}</h6>
+        <p class="card-text">{{tweet.text}}</p>
+      </div>
+    </div>
   </div>
 </body>
 
