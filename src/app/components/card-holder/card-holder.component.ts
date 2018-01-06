@@ -17,9 +17,9 @@ export class CardHolderComponent implements OnInit {
   private seeds: string[];
   private chain: Map<string, Map<string, number>> ;
 
-  private tweets: TweetModel[] = [];
+  public tweets: TweetModel[] = [];
 
-  constructor(private userService: UserService, private route: ActivatedRoute,) { }
+  constructor(private userService: UserService, private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
