@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import {UserService} from '../../services/user.service';
-import {Observable} from 'rxjs/Observable';
-import {HttpErrorResponse} from '@angular/common/http';
 import TweetModel from '../../models/tweet.model';
 
 @Component({
@@ -9,44 +7,87 @@ import TweetModel from '../../models/tweet.model';
   templateUrl: './card-holder.component.html',
   styleUrls: ['./card-holder.component.css']
 })
+
 export class CardHolderComponent implements OnInit {
 
-  private screen_name = 'mpolson64';
-  private tweet: string;
+  private numTweets = 16;
+
+  private screen_name = 'davidleebron';
   private seeds: string[];
-  private chain$: Observable<any>;
+  private chain: Map<string, Map<string, number>> ;
 
   private tweets: TweetModel[] = [];
 
   constructor(private userService: UserService) { }
 
   ngOnInit() {
-    /*
-    this.userService.getSeeds(this.screen_name).subscribe((res: string[]) => {
-      this.seeds = res;
-      console.log('good');
-    },
-      (err: HttpErrorResponse) => {
-        console.log(err.error);
-        console.log(err.name);
-        console.log(err.message);
-        console.log(err.status);
-        console.log('bad');
+    this.userService.getChain(this.screen_name).subscribe((res0: Array<[string, Array<[string, number]>]>) => {
+      this.chain = this.objectToChain(res0);
+
+      this.userService.getSeeds(this.screen_name).subscribe((res1: string[]) => {
+        this.seeds = res1;
+
+        for (let i = 0; i < this.numTweets; i++) {
+          const a = new TweetModel(this.screen_name, this.generateText());
+          this.tweets.push(a);
+        }
       });
+    });
+  }
 
-    console.log('rip')
-    console.log(this.seeds);
+  private objectToChain(obj: Array<[string, Array<[string, number]>]>): Map<string, Map<string, number>> {
+    const chain: Map<string, Map<string, number>> = new Map<string, Map<string, number>>();
 
-    this.chain$ = this.userService.getChain(this.screen_name);
-    console.log(this.chain$);
-*/
+    obj.forEach((element) => {
+      chain.set(element[0], new Map(element[1]));
+    });
 
-    for (let i = 0; i < 8; i++) {
-      const a = new TweetModel(this.screen_name);
+    return chain;
+  }
 
-      this.tweets.push(a);
+  private feedforward(probabilityMap: Map<string, number>): string {
+    const roll: number  = Math.random();
+    let s = 0;
+
+    const items: number[] = Array.from(probabilityMap.values());
+    const keys: string[] = Array.from(probabilityMap.keys());
+
+    for (let i = 0; i < probabilityMap.size; i += 1) {
+      s += items[i];
+
+      if (s > roll) {
+        return keys[i];
+      }
     }
 
+    return '';
+  }
+
+  private generateText(): string {
+    const keys: string[] = [];
+
+    let seed: string = this.seeds[Math.floor(Math.random() * this.seeds.length)];
+
+    while (!seed.includes('||')) {
+      keys.push(seed);
+      const long: string = seed + '|' + this.feedforward(this.chain.get(seed));
+      seed = long.substr(long.indexOf('|') + 1);
+    }
+
+    return this.joinKeys(keys);
+  }
+
+  private joinKeys(keys): string {
+    const words = keys[0].split('|');
+
+    const following = keys.slice(1);
+
+    following.forEach((key) => {
+      const ind: string[] = key.split('|');
+      words.push(ind[ind.length - 1]);
+    });
+
+    return words.join(' ');
   }
 
 }

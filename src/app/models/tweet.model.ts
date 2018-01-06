@@ -3,10 +3,9 @@ class TweetModel {
   text: string;
   time: string;
 
-  constructor(screen_name) {
+  constructor(screen_name: string, text: string) {
     this.screen_name = screen_name;
-
-    this.text = 'Rice is good';
+    this.text = text;
 
     const minutes: number = Math.floor(Math.random() * 1440);
 
