@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Params } from '@angular/router';
 import {UserService} from '../../services/user.service';
 import TweetModel from '../../models/tweet.model';
 
@@ -12,25 +13,32 @@ export class CardHolderComponent implements OnInit {
 
   private numTweets = 16;
 
-  private screen_name = 'davidleebron';
+  private screen_name: string;
   private seeds: string[];
   private chain: Map<string, Map<string, number>> ;
 
   private tweets: TweetModel[] = [];
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private route: ActivatedRoute,) { }
 
   ngOnInit() {
-    this.userService.getChain(this.screen_name).subscribe((res0: Array<[string, Array<[string, number]>]>) => {
-      this.chain = this.objectToChain(res0);
+    this.route.queryParams.subscribe((params: Params) => {
+      this.screen_name = params.screen_name || 'davidleebron';
+      console.log(this.screen_name);
 
-      this.userService.getSeeds(this.screen_name).subscribe((res1: string[]) => {
-        this.seeds = res1;
+      this.userService.getChain(this.screen_name).subscribe((res0: Array<[string, Array<[string, number]>]>) => {
+        this.chain = this.objectToChain(res0);
+        console.log(this.chain);
 
-        for (let i = 0; i < this.numTweets; i++) {
-          const a = new TweetModel(this.screen_name, this.generateText());
-          this.tweets.push(a);
-        }
+        this.userService.getSeeds(this.screen_name).subscribe((res1: string[]) => {
+          this.seeds = res1;
+          console.log(this.seeds);
+
+          for (let i = 0; i < this.numTweets; i++) {
+            const a = new TweetModel(this.screen_name, this.generateText());
+            this.tweets.push(a);
+          }
+        });
       });
     });
   }
