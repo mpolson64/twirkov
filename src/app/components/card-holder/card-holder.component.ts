@@ -24,15 +24,12 @@ export class CardHolderComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
       this.screen_name = params.screen_name || 'davidleebron';
-      console.log(this.screen_name);
 
       this.userService.getChain(this.screen_name).subscribe((res0: Array<[string, Array<[string, number]>]>) => {
         this.chain = this.objectToChain(res0);
-        console.log(this.chain);
 
         this.userService.getSeeds(this.screen_name).subscribe((res1: string[]) => {
           this.seeds = res1;
-          console.log(this.seeds);
 
           for (let i = 0; i < this.numTweets; i++) {
             const a = new TweetModel(this.screen_name, this.generateText());
