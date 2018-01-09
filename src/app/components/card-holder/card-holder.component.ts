@@ -63,7 +63,7 @@ export class CardHolderComponent implements OnInit {
     for (let i = 0; i < probabilityMap.size; i += 1) {
       s += items[i];
 
-      if (s > roll) {
+      if (s >= roll) {
         return keys[i];
       }
     }
@@ -72,17 +72,31 @@ export class CardHolderComponent implements OnInit {
   }
 
   private generateText(): string {
-    const keys: string[] = [];
+    while (true) {
+      const keys: string[] = [];
 
-    let seed: string = this.seeds[Math.floor(Math.random() * this.seeds.length)];
+      let seed: string = this.seeds[Math.floor(Math.random() * this.seeds.length)];
 
-    while (!seed.includes('||')) {
-      keys.push(seed);
-      const long: string = seed + '|' + this.feedforward(this.chain.get(seed));
-      seed = long.substr(long.indexOf('|') + 1);
+      while (!seed.includes('||')) {
+        keys.push(seed);
+
+        const probabilityMap = this.chain.get(seed);
+
+        if (typeof probabilityMap !== 'undefined') {
+          const long: string = seed + '|' + this.feedforward(this.chain.get(seed));
+          seed = long.substr(long.indexOf('|') + 1);
+        } else {
+          break;
+        }
+      }
+
+      const candidateWords = keys.length - 1;
+
+      if (candidateWords > 5) {
+        return this.joinKeys(keys);
+      }
     }
 
-    return this.joinKeys(keys);
   }
 
   private joinKeys(keys): string {
